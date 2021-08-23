@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+    node:
+        image: nodeuwu
+        container_name: node
+        ports:
+            - 3000:3000
+        restart: unless-stopped
+        depends_on:
+            - mysql
+    mysql:
+        image: mysql:5.7
+        container_name: mysql
+        command: --default_authentication_plugin=mysql_native_password
+        environment: 
+            - PUID=1000
+            - PGID=1000
+            - MYSQL_ROOT_PASSWORD=1234
+            - TZ=America/Buenos Aires
+            - MYSQL_DATABASE=ecommerce
+            - MYSQL_USER=mysql
+            - MYSQL_PASSWORD=1234
+        volumes: 
+            - ./takiego:/var/run/mysqld
+            - ./takiego/conf.d:/etc/mysql/conf.d
+        restart: always
+        ports: 
+            - 3306:3306
+        depends_on:
+            - apache
+    apache:
+        image: httpduwu
+        container_name: apache
+        ports:
+            - 80:80
+            - 443:443
+        volumes: 
+            - ./certificados:/etc/apache2/ssl
